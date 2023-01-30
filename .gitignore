@@ -1,0 +1,8 @@
+__pycache__
+test.py
+settings/Connexion.py
+models/Versions.py
+/jsons
+/env
+/dataMySQL
+/varEnviron
