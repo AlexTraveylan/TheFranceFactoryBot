@@ -1,3 +1,4 @@
+from jsonFiles.reals.json import JsonAPI
 from models.Guild import Guild
 from models.Versions import Versions
 from models.Urls import Urls
@@ -9,20 +10,7 @@ class SetGuild:
 
     def recupGuild(guildId, user):
 
-        json_View_Guild = {
-            "builtInMultiConfigVersion": Versions.builtInMultiConfigVersion,
-            "installId": Versions.installId,
-            "playerEvent": {
-                "createdOn": str(int(time.time()*1000)),
-                "gameConfigVersion": Versions.gameConfigVersion,
-                "multiConfigVersion": Versions.multiConfigVersion,
-                "playerEventData": {
-                    "guildId": guildId
-                },
-                "playerEventType": "VIEW_GUILD_2",
-                "universeVersion": Versions.universeVersion
-            }
-        }
+        json_View_Guild = JsonAPI.json_get_guild(guildId)
 
         getInfos = requests.post(url = Urls.urlApi(user), json = json_View_Guild)
         infos = getInfos.json()
@@ -39,6 +27,6 @@ class SetGuild:
                 isClashOn = False
             members.append(Member(member["userId"], member["displayName"], isClashOn))
 
-        return Guild(id,name,members)
+        return Guild(id, name, members)
 
 

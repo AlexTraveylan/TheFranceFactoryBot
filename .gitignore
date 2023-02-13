@@ -2,7 +2,7 @@ __pycache__
 test.py
 settings/Connexion.py
 models/Versions.py
-/jsons
+/jsonFiles/temoins
 /env
 /dataMySQL
 /varEnviron

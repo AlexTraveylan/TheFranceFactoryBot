@@ -1,27 +1,17 @@
-from models.Versions import Versions
+from jsonFiles.reals.json import JsonAPI
 from models.Urls import Urls
 from models.Member import Member
 from models.Guild import Guild
 
-import time
 import requests
+
+from models.User import User
 
 class SetUserGuild:
 
-    def setUserGuild(user):
+    def setUserGuild(user: User) -> Guild:
 
-        Json_Player_2 = {
-            "builtInMultiConfigVersion": Versions.builtInMultiConfigVersion,
-            "installId": Versions.installId,
-            "playerEvent": {
-                "createdOn": str(int(time.time()*1000)),
-                "gameConfigVersion": Versions.gameConfigVersion,
-                "multiConfigVersion": Versions.multiConfigVersion,
-                "playerEventData": {},
-                "playerEventType": "GET_PLAYER_2",
-                "universeVersion": Versions.universeVersion
-            }
-        }
+        Json_Player_2 = JsonAPI.json_player_2()
 
         getInfos = requests.post(url = Urls.urlApi(user), json = Json_Player_2)
         infos = getInfos.json()
@@ -42,3 +32,13 @@ class SetUserGuild:
             listMembers.append(Member(member["userId"], member["displayName"], isClasOn))
         
         return Guild(id, name, listMembers)
+    
+    def dict_UserId_To_DisplayName(user: User) -> dict:
+
+        guildDic: dict = {}
+        players: list[Member] = SetUserGuild.setUserGuild(user).members
+
+        for player in players:
+            guildDic[player.userId] = player.displayName
+        
+        return guildDic

@@ -11,36 +11,20 @@
 #                                teamId (team1ou2)
 #                                opponentGuildId
 
-from models.Versions import Versions
+from jsonFiles.reals.json import JsonAPI
 from models.Urls import Urls
 from models.Clash import Clash
 from models.PowerClash import PowerClash
 from settings.SetOtherGuild import SetGuild
-
-import time
 import requests
 import re
 
 
 class SetClash:
 
-    Json_Player_2 = {
-            "builtInMultiConfigVersion": Versions.builtInMultiConfigVersion,
-            "installId": Versions.installId,
-            "playerEvent": {
-                "createdOn": str(int(time.time()*1000)),
-                "gameConfigVersion": Versions.gameConfigVersion,
-                "multiConfigVersion": Versions.multiConfigVersion,
-                "playerEventData": {},
-                "playerEventType": "GET_PLAYER_2",
-                "universeVersion": Versions.universeVersion
-            }
-        }
-
-    
     def recupClashInfo(user):
 
-        getInfos = requests.post(url = Urls.urlApi(user), json = SetClash.Json_Player_2)
+        getInfos = requests.post(url = Urls.urlApi(user), json = JsonAPI.json_player_2())
         infos = getInfos.json()
 
         events = infos["eventResult"]["eventResponseData"]["player"]["guild"]["sharedEvents"]["sharedEvents"]
@@ -70,7 +54,7 @@ class SetClash:
             dictForTraduce_UserId_in_DisplayName[member.userId] = member.displayName
 
 
-        getInfos = requests.post(url = Urls.urlApi(user), json = SetClash.Json_Player_2)
+        getInfos = requests.post(url = Urls.urlApi(user), json = JsonAPI.json_player_2())
         infos = getInfos.json()
 
         liveEvents = infos["eventResult"]["eventResponseData"]["player"]["hero"]["liveEvents"]["liveEvents"]
@@ -120,7 +104,7 @@ class SetClash:
         else:
             team = "team2"
 
-        getInfos = requests.post(url = Urls.urlApi(user), json = SetClash.Json_Player_2)
+        getInfos = requests.post(url = Urls.urlApi(user), json = JsonAPI.json_player_2())
         infos = getInfos.json()
 
         liveEvents = infos["eventResult"]["eventResponseData"]["player"]["hero"]["liveEvents"]["liveEvents"]

@@ -1,5 +1,9 @@
 import discord
 from discord.ext import commands
+from models.AttacksAndBombs import MemberABInfos
+from models.User import User
+from settings.MembersBombsAndAttacksInfos import MembersBombsAndAttacksInfos
+from settings.SetUserGuild import SetUserGuild
 
 from varEnviron.environ import *
 
@@ -87,6 +91,110 @@ async def infoClash(ctx, number):
 
         await ctx.send(reponse)
     
+@bot.command("cd")
+async def cd(ctx):
+    '''EasterEgg pour mezzerine le relou
+    TO DO : S'il abuse, ajouter un avertissement, suivi d'un ban.
+    '''
+    ctx.send(f"Haha t'es trop drole {ctx.author.name} !! (non ...)")
+
+@bot.command("ab_detail")
+async def ab_detail(ctx):
+    ''' Display the remining attacks or bombs for the current day, with members details
+    input
+    -----
+        None
+    output
+    -----
+        remining bombs and attacks on discord
+    '''
+
+    user: User = Connexion.getConnexion()
+
+    dict_for_traduce_memberId_to_name = SetUserGuild.dict_UserId_To_DisplayName(user)
+
+    membersData: MemberABInfos = MembersBombsAndAttacksInfos.Remaning_attacks_and_bombs_for_today(user)
+
+    message = "```Bilan des attaques et des bombes restantes : \n\n"
+    for datum in sorted(membersData, key=lambda x: (x.activity.attacks_left, x.activity.bomb_left)):
+        message += datum.displayInfoToString(dict_for_traduce_memberId_to_name) + "\n\n"
+    message += "```"
+
+    await ctx.send(message)
+
+@bot.command("ab")
+async def ab(ctx):
+    '''Display on discord the remining bombs and attacks. No members names.
+    '''
+
+    user: User = Connexion.getConnexion()
+
+    membersData: MemberABInfos = MembersBombsAndAttacksInfos.Remaning_attacks_and_bombs_for_today(user)
+
+    remaningBombs: int = sum([x.activity.bomb_left for x in membersData])
+    remaningAttacks: int = sum([x.activity.attacks_left for x in membersData])
+
+    await ctx.send(f"```Attaques restantes : {remaningAttacks} \nBombes restantes : {remaningBombs}\n```")
+
+@bot.command("a")
+async def a(ctx):
+    '''Display on discord the remining attacks and list of members with attacks
+    '''
+    user: User = Connexion.getConnexion()
+
+    dict_for_traduce_memberId_to_name = SetUserGuild.dict_UserId_To_DisplayName(user)
+
+    membersData: MemberABInfos = MembersBombsAndAttacksInfos.Remaning_attacks_and_bombs_for_today(user)
+
+    remaningAttacks: int = sum([x.activity.attacks_left for x in membersData])
+    listMembersWithRemaningAttacks: MemberABInfos = filter(lambda x:x.activity.attacks_left > 0, membersData)
+
+    message = f"```{remaningAttacks} attaques restantes: \n\n"
+    for member in sorted(listMembersWithRemaningAttacks,key=lambda x: x.activity.attacks_left):
+        name = dict_for_traduce_memberId_to_name[member.userId]
+        space = " " * (14 - len(name))
+        message += f"{name}{space} {member.activity.attacks_left}\n"
+    message += "```"
+    await ctx.send(message)
+
+
+@bot.command("b")
+async def b(ctx):
+    '''Display on discord the remining bombs and list of members with bomb
+    '''
+    user: User = Connexion.getConnexion()
+
+    dict_for_traduce_memberId_to_name = SetUserGuild.dict_UserId_To_DisplayName(user)
+
+    membersData: MemberABInfos = MembersBombsAndAttacksInfos.Remaning_attacks_and_bombs_for_today(user)
+
+    remaningBombs: int = sum([x.activity.bomb_left for x in membersData])
+    listMembersWithRemaningAttacks: MemberABInfos = filter(lambda x:x.activity.bomb_left == 1, membersData)
+
+    message = f"```{remaningBombs} bombes restantes: \n\n"
+    for member in listMembersWithRemaningAttacks:
+        name = dict_for_traduce_memberId_to_name[member.userId]
+        message += f"{name}\n"
+    message += "```"
+    await ctx.send(message)
+
+
+@bot.command("ab_week")
+async def ab_week(ctx):
+
+    user: User = Connexion.getConnexion()
+
+    dict_for_traduce_memberId_to_name = SetUserGuild.dict_UserId_To_DisplayName(user)
+
+    membersData: MemberABInfos = MembersBombsAndAttacksInfos.Remaning_attacks_and_bombs_for_saison(user)
+
+    message = "```Bilan des attaques et bombes ratés sur une semaine : \n\n"
+    for datum in sorted(membersData, key=lambda x: (x.activity.attacks_left, x.activity.bomb_left)):
+        message += datum.displayInfoToString(dict_for_traduce_memberId_to_name) + "\n\n"
+    message += "```"
+
+    await ctx.send(message)
+
 
 bot.run(BOT_KEY)
 

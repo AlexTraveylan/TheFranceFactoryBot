@@ -1,7 +1,5 @@
-import gspread
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
-from models.Message_guild import Message_guild
 from models.PowerClash import PowerClash
 from models.Result_clash import Result_clash
 from varEnviron.environ import *
