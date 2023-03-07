@@ -34,7 +34,7 @@ class SetClash:
         opponentGuildID = event["guildChallenge"]["opponentGuildId"]
         teamID = event["guildChallenge"]["teamId"]
 
-        return Clash(saison,opponentGuildID, idClash, teamID)
+        return Clash(saison, opponentGuildID, idClash, teamID)
     
 # Find team ("team1" or "team2") in object Clash returned by recupClashInfo just over there
 # Option : Reversed = True for data from MainUser guild.
@@ -44,16 +44,13 @@ class SetClash:
             team = "team2"
         else:
             team = "team1"
-        
-        print(team)
 
         # TO DO : MAKE a method makeDitionnary(guildId) who return the dict
         ennemyGuild = SetGuild.recupGuild(clashInfo.opponentGuildID, user)
         dictForTraduce_UserId_in_DisplayName = {}
         for member in ennemyGuild.members:
             dictForTraduce_UserId_in_DisplayName[member.userId] = member.displayName
-
-
+        
         getInfos = requests.post(url = Urls.urlApi(user), json = JsonAPI.json_player_2())
         infos = getInfos.json()
 
@@ -66,7 +63,8 @@ class SetClash:
             except:
                 pass
             i+=1
-        
+
+        # TO DO make dynamic team
         guild = liveEvents[i]["config"]["liveEventGameModes"]["guildChallenge"][team]
 
         powersclash = []

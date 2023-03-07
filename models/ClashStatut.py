@@ -9,7 +9,7 @@ class CLashStatut:
         self.fortification = fortification
         self.spectator = spectator
     
-    def toString(self):
+    def __str__(self):
         if self.spectator:
             return f"{self.userID} est spectateur"
         else:

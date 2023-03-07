@@ -19,6 +19,14 @@ class pushMessage:
         REFACTORED AND TESTED WITH SUCCES : 13/02/2023
         '''
 
-        json_message = JsonAPI.json_message(message, guild)
+        json_guild_message = JsonAPI.json_guild_message(message, guild)
 
-        requests.post(url=Urls.urlApi(user), json=json_message)
+        requests.post(url=Urls.urlApi(user), json=json_guild_message)
+    
+    def messageClashPush(message: str, user: User, guild: Guild) -> None:
+        ''' This function post a message, on clash chat
+        '''
+
+        json_clash_message = JsonAPI.json_clash_message(message, guild)
+
+        requests.post(url=Urls.urlApi(user), json = json_clash_message)

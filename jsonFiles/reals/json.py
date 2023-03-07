@@ -1,10 +1,28 @@
 
 import time
-from models.Versions import Versions
+from models.Guild import Guild
+from varEnviron.Versions import Versions
 
 class JsonAPI:
 
-    def json_message(message, guild):
+    def json_clash_message(message: str, guild: Guild):
+        return {
+                "builtInMultiConfigVersion": Versions.builtInMultiConfigVersion,
+                "installId": Versions.installId,
+                "playerEvent": {
+                    "createdOn": str(int(time.time()*1000)),
+                    "gameConfigVersion": Versions.gameConfigVersion,
+                    "multiConfigVersion": Versions.multiConfigVersion,
+                    "playerEventData": {
+                        "guildId": guild.id,
+                        "message": message
+                    },
+                    "playerEventType": "SEND_GUILD_CHALLENGE_CHAT_MESSAGE",
+                    "universeVersion": Versions.universeVersion
+                }
+            }
+
+    def json_guild_message(message: str, guild: Guild):
         return {
                 "builtInMultiConfigVersion": Versions.builtInMultiConfigVersion,
                 "installId": Versions.installId,

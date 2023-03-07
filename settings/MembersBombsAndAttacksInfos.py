@@ -13,7 +13,7 @@ class MembersBombsAndAttacksInfos:
 
     def Remaning_attacks_and_bombs_for_today(user: User) -> list[MemberABInfos]:
 
-        guild = SetUserGuild.setUserGuild(user)
+        guild = SetUserGuild.getGuild(user)
 
         membersData: list[MemberABInfos] = []
         for member in guild.members:
@@ -43,7 +43,7 @@ class MembersBombsAndAttacksInfos:
 
     def Remaning_attacks_and_bombs_for_saison(user: User) -> list[MemberABInfos]:
 
-            guild = SetUserGuild.setUserGuild(user)
+            guild = SetUserGuild.getGuild(user)
             
             play_2_response = requests.post(url = Urls.urlApi(user), json = JsonAPI.json_player_2()).json()
 

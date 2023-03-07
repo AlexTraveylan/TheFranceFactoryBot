@@ -1,6 +1,6 @@
 from jsonFiles.reals.json import JsonAPI
 from models.Guild import Guild
-from models.Versions import Versions
+from varEnviron.Versions import Versions
 from models.Urls import Urls
 from models.Member import Member
 import time
@@ -8,7 +8,7 @@ import requests
 
 class SetGuild:
 
-    def recupGuild(guildId, user):
+    def recupGuild(guildId, user) -> Guild:
 
         json_View_Guild = JsonAPI.json_get_guild(guildId)
 

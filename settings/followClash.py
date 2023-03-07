@@ -1,7 +1,8 @@
+from jsonFiles.reals.json import JsonAPI
 from models.ClashStatut import CLashStatut
 from settings.SetClash import SetClash
 from varEnviron.environ import *
-from models.Versions import *
+from varEnviron.Versions import *
 from models.Urls import Urls
 from models.Result_clash import Result_clash
 from settings.SetOtherGuild import SetGuild
@@ -31,7 +32,7 @@ class FollowClash:
         for member in ennemyGuild.members:
             dictForTraduce_UserId_in_DisplayName[member.userId] = member.displayName
         
-        ourGuild = SetUserGuild.setUserGuild(user)
+        ourGuild = SetUserGuild.getGuild(user)
         for member in ourGuild.members:
             dictForTraduce_UserId_in_DisplayName[member.userId] = member.displayName
         
@@ -65,18 +66,18 @@ class FollowClash:
         
         return results
     
-    def displayRemainingAttacks(user, clashInfo, team):
+    def displayRemainingAttacks(user, clashInfo, team) -> list[CLashStatut]:
 
         ennemyGuild = SetGuild.recupGuild(clashInfo.opponentGuildID, user)
         dictForTraduce_UserId_in_DisplayName = {}
         for member in ennemyGuild.members:
             dictForTraduce_UserId_in_DisplayName[member.userId] = member.displayName
         
-        ourGuild = SetUserGuild.setUserGuild(user)
+        ourGuild = SetUserGuild.getGuild(user)
         for member in ourGuild.members:
             dictForTraduce_UserId_in_DisplayName[member.userId] = member.displayName
         
-        getInfos = requests.post(url = Urls.urlApi(user), json = SetClash.Json_Player_2)
+        getInfos = requests.post(url = Urls.urlApi(user), json = JsonAPI.json_player_2())
         infos = getInfos.json()
 
         liveEvents = infos["eventResult"]["eventResponseData"]["player"]["hero"]["liveEvents"]["liveEvents"]

@@ -2,14 +2,44 @@ import requests
 from DataSheets.GoogleSheet import GoogleSheet
 from models.Message_guild import Message_guild
 from models.Urls import Urls
+from models.User import User
 
-from models.Versions import Versions
+from varEnviron.Versions import Versions
 
 
 class GuildChat:
 
-    def recupGuildChatMessages(user):
+    def __init__(self) -> None:
+        self.initSeq: int = 0
+    
+    def jsonForGetGuildChat(seq : int):
+        return {
+                "channels": [
+                    {
+                        "name": "guildchat",
+                        "seq": (seq - 1)
+                    }
+                ],
+                "gameConfigVersion": Versions.gameConfigVersion,
+                "multiConfigVersion": Versions.multiConfigVersion
+            }
+    
+    def setInitSeq(self, user: User) -> None:
+        ''' Go to api for return last seq on guild chat
+        '''
+
+        json = GuildChat.jsonForGetGuildChat(0)
+        try:
+            messages = requests.post(url = Urls.urlChannel(user), json = json).json()["events"]["guildchat"]
+        except:
+            raise ValueError("Echec dans la recupération des messages")
+        
+        self.initSeq = int(messages[-1]["seq"]) + 1 
+        
+
+    def recupGuildChatMessages(self, user):
         ''' A function who recup news messages from ChatGuild.
+        Execute self.setInitSeq first
         Using GoogleSheet as bdd for recup last seq of messages recupered
 
         return
@@ -19,19 +49,12 @@ class GuildChat:
 
         '''
         newMessages = []
-        seq = GoogleSheet.recupLastSeqFromGuildChat()
+        # Execute self.setInitSeq first
+        seq = self.initSeq
 
         # Here with seq-1, we are sure to recup at least 1 message, and dont have slow bug.
-        jsonForGetGuildChat = {
-                        "channels": [
-                            {
-                                "name": "guildchat",
-                                "seq": (seq - 1)
-                            }
-                        ],
-                        "gameConfigVersion": Versions.gameConfigVersion,
-                        "multiConfigVersion": Versions.multiConfigVersion
-                            }
+        jsonForGetGuildChat = GuildChat.jsonForGetGuildChat(seq - 1)
+
         try:
             messages = requests.post(url = Urls.urlChannel(user), json = jsonForGetGuildChat).json()["events"]["guildchat"]
             # messages should contain an array with messages, with at least 1 message (cause seq - 1)

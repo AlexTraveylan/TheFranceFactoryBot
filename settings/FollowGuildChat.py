@@ -1,4 +1,5 @@
-from models.Versions import Versions
+from models.User import User
+from varEnviron.Versions import Versions
 from models.Urls import Urls
 from models.Message_guild import Message_guild
 
@@ -6,7 +7,7 @@ import requests
 
 class FollowGuildChat:
 
-    def messagesGuildChat(user):
+    def messagesGuildChat(user: User):
 
         json_guild_chat = {
                 "channels": [
