@@ -41,7 +41,7 @@ class MembersBombsAndAttacksInfos:
         
         return membersData
 
-    def Remaning_attacks_and_bombs_for_saison(user: User) -> list[MemberABInfos]:
+    def Remaning_attacks_and_bombs_for_last_days(user: User, days: int) -> list[MemberABInfos]:
 
             guild = SetUserGuild.getGuild(user)
             
@@ -56,10 +56,41 @@ class MembersBombsAndAttacksInfos:
 
             membersData: list[MemberABInfos] = []
             for member in guild.members:
-                membersData.append(MemberABInfos(member.userId, Activity(7, 14)))
+                membersData.append(MemberABInfos(member.userId, Activity(days, days*2)))
 
             for act in guildActivities:
-                if act['createdOn'] < Fonctions.debutJourneeByTimecode(actualTimecode):
+                if Fonctions.debutJourneeByTimecode(actualTimecode) - 24*60*60*1000*days < act['createdOn'] < Fonctions.debutJourneeByTimecode(actualTimecode):
+                    if act['type'] == 'GUILD_BOSS_BOMB':
+                        for datum in membersData:
+                            if act['userId'] == datum.userId:
+                                datum.activity.bomb_left -= 1
+                    else:
+                        for datum in membersData:
+                            if act['userId'] == datum.userId:
+                                datum.activity.attacks_left -= 1
+            
+            return membersData
+    
+
+    def Remaning_attacks_and_bombs_for_hier(user: User) -> list[MemberABInfos]:
+
+            guild = SetUserGuild.getGuild(user)
+            
+            play_2_response = requests.post(url = Urls.urlApi(user), json = JsonAPI.json_player_2()).json()
+
+            player = play_2_response['eventResult']['eventResponseData']['player']
+            actualTimecode = player['timestamp']
+            # beginSaisonTimeCode = player['guild']['guildBossGameMode']['season']['seasonStartedOn']
+
+            guildActivities = player['guild']['guildActivities']
+
+
+            membersData: list[MemberABInfos] = []
+            for member in guild.members:
+                membersData.append(MemberABInfos(member.userId, Activity(1, 2)))
+
+            for act in guildActivities:
+                if Fonctions.debutJourneeByTimecode(actualTimecode) - 24*60*60*1000 < act['createdOn'] < Fonctions.debutJourneeByTimecode(actualTimecode):
                     if act['type'] == 'GUILD_BOSS_BOMB':
                         for datum in membersData:
                             if act['userId'] == datum.userId:

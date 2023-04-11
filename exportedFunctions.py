@@ -13,7 +13,7 @@ class ExportedFuntions:
 
         dict_for_traduce_memberId_to_name = SetUserGuild.dict_UserId_To_DisplayName(user)
 
-        membersData: MemberABInfos = MembersBombsAndAttacksInfos.Remaning_attacks_and_bombs_for_today(user)
+        membersData: list[MemberABInfos] = MembersBombsAndAttacksInfos.Remaning_attacks_and_bombs_for_today(user)
 
         message = "```Bilan des attaques et des bombes restantes : \n\n"
         for datum in sorted(membersData, key=lambda x: (x.activity.attacks_left, x.activity.bomb_left)):

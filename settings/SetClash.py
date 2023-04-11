@@ -95,7 +95,7 @@ class SetClash:
         
         return powersclash
     
-    def recupAlliesPowers(user , clashInfo, reversed=False):
+    def recupAlliesPowers(user , clashInfo, reversed=False) -> list[PowerClash]:
 
         if clashInfo.team == "team1" and not reversed:
             team = "team1"

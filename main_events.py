@@ -47,6 +47,8 @@ async def updateChatGuildOnGeneral():
 
     if messages:
         for message in messages:
+            # Si cela ne fonctionne pas, utiliser guild.chatChat.setInitseq(user) mais pas opti
+            guildChat.initSeq += 1
             if message.displayName != MAINUSER_DISPLAYNAME:
                 await channel.send(f"`{message.displayName} a dit : {message.content}`")
 

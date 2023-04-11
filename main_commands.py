@@ -26,94 +26,98 @@ async def on_ready():
 
 
 
-# @bot.command("bc")
-# async def bc(ctx: commands.Context):
-#     ''' This command recup ennemy power on clash and display them on googleSheet
-#     Then GoogleSheet give the targetsx to members. 
-#     '''
-#     try:
-#         user = Connexion.getConnexion()
-#         await ctx.send("`Connexion réussie`")
-
-#         clashInfo = SetClash.recupClashInfo(user)
-#         await ctx.send("`Infos du clash récupérées`")
-
-#         ennemiesPowers = SetClash.recupPowers(user, clashInfo)
-#         await ctx.send("`Recupération des puissances ennemies reussie`")
-
-#         GoogleSheet.writeInSheetForSetClash(ennemiesPowers)
-#         await ctx.send("`Build réussi et données envoyées avec succes dans le google sheet !`")
-
-#     except:
-#         await ctx.send("`Une ou plusieurs erreurs se sont produites`")
-
 @bot.command("bc")
 async def bc(ctx: commands.Context):
-    channel = bot.get_channel(CLASH_GUILD_DISCORD_CHAT)
-    try :
+    ''' This command recup ennemy power on clash and display them on googleSheet
+    Then GoogleSheet give the targetsx to members. 
+    '''
+    try:
         user = Connexion.getConnexion()
         await ctx.send("`Connexion réussie`")
 
         clashInfo = SetClash.recupClashInfo(user)
         await ctx.send("`Infos du clash récupérées`")
-        
-        ennemiesPowers = SetClash.recupPowers(user, clashInfo, True)
+
+        ennemiesPowers = SetClash.recupPowers(user, clashInfo)
         await ctx.send("`Recupération des puissances ennemies reussie`")
 
-        ennemiesPowersList = []
-        for el in ennemiesPowers:
-            ennemiesPowersList.append({"member":el.id_member, "team":f"{el.id_member} T1", "puissance": el.powers[0]})
-            ennemiesPowersList.append({"member":el.id_member, "team":f"{el.id_member} T2", "puissance": el.powers[1]})
-            ennemiesPowersList.append({"member":el.id_member, "team":f"{el.id_member} T3", "puissance": el.powers[2]})
+        GoogleSheet.writeInSheetForSetClash(ennemiesPowers)
 
-        ennemiesPowersList = sorted(ennemiesPowersList, key=lambda x:x["puissance"])[::-1]   
-        await ctx.send("`Classement des ennemies réussie`")
+        await ctx.send("`Build réussi et données envoyées avec succes dans le google sheet !`")
 
-        alliesPowersList = []
-        alliesPowers = SetClash.recupAlliesPowers(user, clashInfo)
-        await ctx.send("`Recupération des puissances alliées reussie`")
-        for el in alliesPowers:
-            alliesPowersList.append({"member":el.id_member, "team":f"{el.id_member} T1", "puissance": el.powers[0]})
-            alliesPowersList.append({"member":el.id_member, "team":f"{el.id_member} T2", "puissance": el.powers[1]})
-            alliesPowersList.append({"member":el.id_member, "team":f"{el.id_member} T3", "puissance": el.powers[2]})
-
-        alliesPowersList = sorted(alliesPowersList, key=lambda x:x["puissance"])[::-1]
-        await ctx.send("`Classement des alliés reussie`")
-
-        beloune = filter(lambda x: x.member.lower() == "beloune",alliesPowersList)
-
-        duels = []
-        for i in range(len(ennemiesPowersList)):
-            duels.append([
-                        alliesPowersList[i]["member"],
-                        alliesPowersList[i]["team"], 
-                        ennemiesPowersList[i]["team"], 
-                        int(alliesPowersList[i]["puissance"]) - int(ennemiesPowersList[i]["puissance"])
-                        ])
-
-        duels = sorted(duels, key=lambda x:x[0])
-        await ctx.send("`Assignation des cibles reussie`")
-
-        # used for send message
         guild = SetUserGuild.getGuild(user)
-        discord_message = "```"
-        for i in range(1, len(duels), 3):
-            message = f"Cibles de {duels[i-1][0]} :\n\n"
-            message += f"  - {duels[i-1][2]}  ({duels[i-1][3]})\n"
-            message += f"  - {duels[i][2]}  ({duels[i][3]})\n"
-            message += f"  - {duels[i+1][2]}  ({duels[i+1][3]})\n"
-
-            print(message)
-            pushMessage.messageGuildPush(message, user, guild)
-            discord_message += message + "\n\n"
-
-        await channel.send(f"{discord_message}```")
-
-
-        await ctx.send("`Envoi sur le discord et sur le jeu reussi. Fin.`")
+        pushMessage.messageClashPush("(bot) Cibles disponibles sur discord", user, guild)
 
     except:
-        await ctx.send("`erreur`")
+        await ctx.send("`Une ou plusieurs erreurs se sont produites`")
+
+# @bot.command("bc")
+# async def bc(ctx: commands.Context):
+#     channel = bot.get_channel(CLASH_GUILD_DISCORD_CHAT)
+#     try :
+#         user = Connexion.getConnexion()
+#         await ctx.send("`Connexion réussie`")
+
+#         clashInfo = SetClash.recupClashInfo(user)
+#         await ctx.send("`Infos du clash récupérées`")
+        
+#         ennemiesPowers = SetClash.recupPowers(user, clashInfo, True)
+#         await ctx.send("`Recupération des puissances ennemies reussie`")
+
+#         ennemiesPowersList = []
+#         for el in ennemiesPowers:
+#             ennemiesPowersList.append({"member":el.id_member, "team":f"{el.id_member} T1", "puissance": el.powers[0]})
+#             ennemiesPowersList.append({"member":el.id_member, "team":f"{el.id_member} T2", "puissance": el.powers[1]})
+#             ennemiesPowersList.append({"member":el.id_member, "team":f"{el.id_member} T3", "puissance": el.powers[2]})
+
+#         ennemiesPowersList = sorted(ennemiesPowersList, key=lambda x:x["puissance"])[::-1]   
+#         await ctx.send("`Classement des ennemies réussie`")
+
+#         alliesPowersList = []
+#         alliesPowers = SetClash.recupAlliesPowers(user, clashInfo)
+#         await ctx.send("`Recupération des puissances alliées reussie`")
+#         for el in alliesPowers:
+#             alliesPowersList.append({"member":el.id_member, "team":f"{el.id_member} T1", "puissance": el.powers[0]})
+#             alliesPowersList.append({"member":el.id_member, "team":f"{el.id_member} T2", "puissance": el.powers[1]})
+#             alliesPowersList.append({"member":el.id_member, "team":f"{el.id_member} T3", "puissance": el.powers[2]})
+
+#         alliesPowersList = sorted(alliesPowersList, key=lambda x:x["puissance"])[::-1]
+#         await ctx.send("`Classement des alliés reussie`")
+
+#         beloune = filter(lambda x: x.member.lower() == "beloune",alliesPowersList)
+
+#         duels = []
+#         for i in range(len(ennemiesPowersList)):
+#             duels.append([
+#                         alliesPowersList[i]["member"],
+#                         alliesPowersList[i]["team"], 
+#                         ennemiesPowersList[i]["team"], 
+#                         int(alliesPowersList[i]["puissance"]) - int(ennemiesPowersList[i]["puissance"])
+#                         ])
+
+#         duels = sorted(duels, key=lambda x:x[0])
+#         await ctx.send("`Assignation des cibles reussie`")
+
+#         # used for send message
+#         guild = SetUserGuild.getGuild(user)
+#         discord_message = "```"
+#         for i in range(1, len(duels), 3):
+#             message = f"Cibles de {duels[i-1][0]} :\n\n"
+#             message += f"  - {duels[i-1][2]}  ({duels[i-1][3]})\n"
+#             message += f"  - {duels[i][2]}  ({duels[i][3]})\n"
+#             message += f"  - {duels[i+1][2]}  ({duels[i+1][3]})\n"
+
+#             print(message)
+#             pushMessage.messageGuildPush(message, user, guild)
+#             discord_message += message + "\n\n"
+
+#         await channel.send(f"{discord_message}```")
+
+
+#         await ctx.send("`Envoi sur le discord et sur le jeu reussi. Fin.`")
+
+#     except:
+#         await ctx.send("`erreur`")
 
 @bot.command("fClash")
 async def fClash(ctx: commands.Context):
@@ -208,8 +212,7 @@ async def a(ctx: commands.Context):
     message = f"```{remaningAttacks} attaques restantes: \n\n"
     for member in sorted(listMembersWithRemaningAttacks,key=lambda x: x.activity.attacks_left):
         name = dict_for_traduce_memberId_to_name[member.userId]
-        space = " " * (14 - len(name))
-        message += f"{name}{space} {member.activity.attacks_left}\n"
+        message += f"{member.activity.attacks_left}  - {name}\n"
     message += "```"
     await ctx.send(message)
 
@@ -234,22 +237,52 @@ async def b(ctx: commands.Context):
     message += "```"
     await ctx.send(message)
 
-
-@bot.command("ab_week")
-async def ab_week(ctx: commands.Context) -> None:
+@bot.command("ab_hier")
+async def ab_hier(ctx: commands.Context) -> None:
 
     user: User = Connexion.getConnexion()
 
     dict_for_traduce_memberId_to_name: dict = SetUserGuild.dict_UserId_To_DisplayName(user)
 
-    membersData: list[MemberABInfos] = MembersBombsAndAttacksInfos.Remaning_attacks_and_bombs_for_saison(user)
+    membersData: list[MemberABInfos] = MembersBombsAndAttacksInfos.Remaning_attacks_and_bombs_for_hier(user)
 
-    message: str = "```Bilan des attaques et bombes ratés sur une semaine : \n\n"
-    for datum in sorted(membersData, key=lambda x: (x.activity.attacks_left, x.activity.bomb_left)):
-        message += datum.displayInfoToString(dict_for_traduce_memberId_to_name) + "\n\n"
-    message += "```"
+    membersData = list(filter(lambda x:(x.activity.bomb_left > 0 or x.activity.attacks_left>0), membersData))
 
-    await ctx.send(message)
+    if len(membersData) == 0:
+        await ctx.send("`Toutes les attaques et bombes ont été effectué`")
+    else:
+        message: str = "```Bilan des attaques et bombes ratés hier : \n\n"
+        for datum in sorted(membersData, key=lambda x: (x.activity.attacks_left, x.activity.bomb_left)):
+            message += datum.displayInfoToString(dict_for_traduce_memberId_to_name) + "\n\n"
+        message += "```"
+
+        await ctx.send(message)
+
+@bot.command("ab_ld")
+async def ab_ld(ctx: commands.Context, day: int) -> None:
+
+    if day > 5:
+        await ctx.send("`Je ne peux pas remonter si loin`")
+    elif day == 0:
+        await ctx.send("`Non`")
+    else:
+        user: User = Connexion.getConnexion()
+
+        dict_for_traduce_memberId_to_name: dict = SetUserGuild.dict_UserId_To_DisplayName(user)
+
+        membersData: list[MemberABInfos] = MembersBombsAndAttacksInfos.Remaning_attacks_and_bombs_for_last_days(user, day)
+
+        membersData = list(filter(lambda x:(x.activity.bomb_left > 0 or x.activity.attacks_left > 0), membersData))
+
+        if len(membersData) == 0:
+            await ctx.send(f"`Toutes les attaques et bombes ont été effectué sur les {day} derniers jours`")
+        else:
+            message: str = f"```Bilan des attaques et bombes ratés sur les {day} derniers jours : \n\n"
+            for datum in sorted(membersData, key=lambda x: (x.activity.attacks_left, x.activity.bomb_left)):
+                message += datum.displayInfoToString(dict_for_traduce_memberId_to_name) + "\n\n"
+            message += "\n\n Attention : Je ne gère pas encore le mercredi off\n```"
+
+            await ctx.send(message)
 
 
 bot.run(BOT_KEY)
